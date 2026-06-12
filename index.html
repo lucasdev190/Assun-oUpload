@@ -54,7 +54,7 @@
                 <textarea id="explicacao" rows="3" placeholder="Por que esta alternativa está correta?" class="w-full p-2 border rounded-md" required></textarea>
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-md transition shadow">
+            <button type="submit" id="btn-enviar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-md transition shadow">
                 Enviar Questão para o Banco
             </button>
         </form>
@@ -62,14 +62,19 @@
 
     <script>
         // CONFIGURAÇÃO DO SUPABASE
-     const SUPABASE_URL = "https://ykampvnnrkwvraxanunm.supabase.co";
-     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYW1wdm5ucmt3dnJheGFudW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTY1MzMsImV4cCI6MjA5Njg3MjUzM30.CScVluXVuZQ31zLWolNFLREz4mH-Cu-YGxlw6YrfeY8";
+        const SUPABASE_URL = "https://ykampvnnrkwvraxanunm.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYW1wdm5ucmt3dnJheGFudW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTY1MzMsImV4cCI6MjA5Njg3MjUzM30.CScVluXVuZQ31zLWolNFLREz4mH-Cu-YGxlw6YrfeY8";
 
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Captura o formulário
         document.getElementById('form-upload').addEventListener('submit', async (e) => {
             e.preventDefault(); // Impede a página de recarregar
+
+            const botao = document.getElementById('btn-enviar');
+            botao.innerText = "Enviando para o banco de dados...";
+            botao.disabled = true;
+            botao.class = "w-full bg-gray-400 text-white font-bold p-3 rounded-md cursor-not-allowed";
 
             // Junta os dados dos campos do formulário
             const dadosQuestao = {
@@ -89,15 +94,28 @@
                 // Envia os dados para a tabela 'questoes' do teu Supabase
                 const { data, error } = await supabase
                     .from('questoes')
-                    .insert([dadosQuestao]);
+                    .insert([dadosQuestao])
+                    .select(); // O .select() força a validação do retorno da linha inserida
 
                 if (error) throw error;
 
                 alert('Questão enviada com sucesso!');
                 document.getElementById('form-upload').reset(); // Limpa a tela para a próxima
             } catch (error) {
-                console.error(error);
-                alert('Erro ao enviar questão: ' + error.message);
+                console.error("Erro detalhado do Supabase:", error);
+                
+                // Alerta detalhado mostrando o código e a mensagem de erro exata
+                alert(
+                    "❌ ERRO AO ENVIAR QUESTÃO!\n\n" +
+                    "Mensagem: " + (error.message || "Erro desconhecido") + "\n" +
+                    "Detalhes: " + (error.details || "Sem detalhes adicionais") + "\n" +
+                    "Código: " + (error.code || "N/A")
+                );
+            } finally {
+                // Restaura o botão ao estado original após terminar o processo
+                botao.innerText = "Enviar Questão para o Banco";
+                botao.disabled = false;
+                botao.class = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-md transition shadow";
             }
         });
     </script>
