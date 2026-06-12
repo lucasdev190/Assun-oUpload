@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Upload - Questões</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">Adicionar Nova Questão</h1>
+        
+        <form id="form-upload" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Matéria</label>
+                    <input type="text" id="materia" placeholder="Ex: Geografia" class="w-full p-2 border rounded-md" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Assunto</label>
+                    <input type="text" id="assunto" placeholder="Ex: Clima" class="w-full p-2 border rounded-md" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Enunciado da Questão</label>
+                <textarea id="enunciado" rows="4" placeholder="Digite a pergunta aqui..." class="w-full p-2 border rounded-md" required></textarea>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700">Alternativas</label>
+                <input type="text" id="alt_a" placeholder="Alternativa A" class="w-full p-2 border rounded-md" required>
+                <input type="text" id="alt_b" placeholder="Alternativa B" class="w-full p-2 border rounded-md" required>
+                <input type="text" id="alt_c" placeholder="Alternativa C" class="w-full p-2 border rounded-md" required>
+                <input type="text" id="alt_d" placeholder="Alternativa D" class="w-full p-2 border rounded-md" required>
+                <input type="text" id="alt_e" placeholder="Alternativa E" class="w-full p-2 border rounded-md" required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Alternativa Correta</label>
+                <select id="correta" class="w-full p-2 border rounded-md bg-white" required>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Explicação / Comentário da Resposta</label>
+                <textarea id="explicacao" rows="3" placeholder="Por que esta alternativa está correta?" class="w-full p-2 border rounded-md" required></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-md transition shadow">
+                Enviar Questão para o Banco
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DO SUPABASE
+        // Substitui os valores abaixo pelas chaves reais que apanhaste no teu painel do Supabase!
+        const SUPABASE_URL = "A_TUA_PROJECT_URL_AQUI";
+        const SUPABASE_ANON_KEY = "A_TUA_CHAVE_ANON_PUBLIC_AQUI";
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Captura o formulário
+        document.getElementById('form-upload').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Impede a página de recarregar
+
+            // Junta os dados dos campos do formulário
+            const dadosQuestao = {
+                materia: document.getElementById('materia').value,
+                assunto: document.getElementById('assunto').value,
+                enunciado: document.getElementById('enunciado').value,
+                alternativa_a: document.getElementById('alt_a').value,
+                alternativa_b: document.getElementById('alt_b').value,
+                alternativa_c: document.getElementById('alt_c').value,
+                alternativa_d: document.getElementById('alt_d').value,
+                alternativa_e: document.getElementById('alt_e').value,
+                correta: document.getElementById('correta').value,
+                explicacao: document.getElementById('explicacao').value
+            };
+
+            try {
+                // Envia os dados para a tabela 'questoes' do teu Supabase
+                const { data, error } = await supabase
+                    .from('questoes')
+                    .insert([dadosQuestao]);
+
+                if (error) throw error;
+
+                alert('Questão enviada com sucesso!');
+                document.getElementById('form-upload').reset(); // Limpa a tela para a próxima
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao enviar questão: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
