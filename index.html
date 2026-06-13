@@ -61,12 +61,12 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SUPABASE (A URL geral e a sua chave real publicável)
+        // CONFIGURAÇÃO DO SUPABASE
         const SUPABASE_URL = "https://ykampvnnrkwvraxanunm.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYW1wdm5ucmt3dnJheGFudW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTY1MzMsImV4cCI6MjA5Njg3MjUzM30.CScVluXVuZQ31zLWolNFLREz4mH-Cu-YGxlw6YrfeY8";
 
-        // Mudamos o nome aqui para 'supabaseClient' para resolver o erro de SyntaxError
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Mudamos o nome aqui para 'bancoDeDados' para resolver o erro de SyntaxError de vez
+        const bancoDeDados = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('form-upload').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -76,7 +76,7 @@
             botao.disabled = true;
             botao.className = "w-full bg-gray-400 text-white font-bold p-3 rounded-md cursor-not-allowed";
 
-            // MAPEAMENTO EXATO IGUAL AS COLUNAS DO SEU PRINT DA TABELA
+            // Coleta os valores do formulário
             const dadosQuestao = {
                 materia: document.getElementById('materia').value,
                 assunto: document.getElementById('assunto').value,
@@ -91,8 +91,8 @@
             };
 
             try {
-                // Envia para a tabela 'questoes' usando a conexão corrigida
-                const { data, error } = await supabaseClient
+                // Envia para a tabela usando a variável certa
+                const { data, error } = await bancoDeDados
                     .from('questoes')
                     .insert([dadosQuestao])
                     .select();
