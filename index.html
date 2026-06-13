@@ -65,7 +65,8 @@
         const SUPABASE_URL = "https://ykampvnnrkwvraxanunm.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYW1wdm5ucmt3dnJheGFudW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTY1MzMsImV4cCI6MjA5Njg3MjUzM30.CScVluXVuZQ31zLWolNFLREz4mH-Cu-YGxlw6YrfeY8";
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Mudamos o nome aqui para 'supabaseClient' para resolver o erro de SyntaxError
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('form-upload').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -73,6 +74,7 @@
             const botao = document.getElementById('btn-enviar');
             botao.innerText = "Enviando para o banco de dados...";
             botao.disabled = true;
+            botao.className = "w-full bg-gray-400 text-white font-bold p-3 rounded-md cursor-not-allowed";
 
             // MAPEAMENTO EXATO IGUAL AS COLUNAS DO SEU PRINT DA TABELA
             const dadosQuestao = {
@@ -89,8 +91,8 @@
             };
 
             try {
-                // Envia para a tabela 'questoes'
-                const { data, error } = await supabase
+                // Envia para a tabela 'questoes' usando a conexão corrigida
+                const { data, error } = await supabaseClient
                     .from('questoes')
                     .insert([dadosQuestao])
                     .select();
@@ -110,6 +112,7 @@
             } finally {
                 botao.innerText = "Enviar Questão para o Banco";
                 botao.disabled = false;
+                botao.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-md transition shadow";
             }
         });
     </script>
